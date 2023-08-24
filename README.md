@@ -5,9 +5,11 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC_BY--NC--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
-Keywords: Sarcopenia, Head and Neck Cancer, Deep Learning, Convolutional Neural Network, CT
 
-Keras implementation with codes and pretrained models for the article "[Development and Validation of an Automated Image-Based Deep Learning Platform for Sarcopenia Assessment in Head and Neck Cancer](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2808141)" published in JAMA Network Open 2023;6(8),e2328280. 
+Official repository for the paper:
+"[Development and Validation of an Automated Image-Based Deep Learning Platform for Sarcopenia Assessment in Head and Neck Cancer](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2808141)", published in JAMA Network Open 2023;6(8),e2328280. 
+
+Keywords: Sarcopenia, Head and Neck Cancer, Deep Learning, Convolutional Neural Network, CT
 
 <p align="center"><img src="https://github.com/AIM-KannLab/DeepSarcopenia/blob/main/figures/figure.png" align="middle" width="800" title="figure" /></p>
 Estimated segmentations with varying Dice similarity coefficient (DSC) values (greater than, equal to, or less than the median DSC) were overlaid on axial CT images to show their similarities to ground truth segmentations for validation and internal test sets. Corresponding difference (Δh) between the estimated C3 section slice and ground truth slice and DSC values are annotated for each case in the validation and internal test sets. Model-estimated C3 slices on sagittal CT images and segmentation on axial CT images are also shown for the external test set. Acceptability scores from expert clinicians’ review are annotated for corresponding cases in the external test set.
@@ -25,6 +27,7 @@ U-Net Segmentation Model Performance
 
 * Python 3.8
 * TensorFlow 2.4
+* Keras
 
 ## Set-up
 
