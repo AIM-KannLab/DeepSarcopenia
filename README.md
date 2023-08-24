@@ -1,6 +1,7 @@
 # DeepSarcopenia: Automated Deep Learning Platform for Sarcopenia Assessment in Head and Neck Cancer
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa] 
-
+[![Python Version](https://img.shields.io/pypi/pyversions/foundation-cancer-image-biomarker.svg)](https://pypi.org/project/foundation-cancer-image-biomarker/)
+[![Dependencies Status](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/pulls?utf8=%E2%9C%93&q=is%3Apr%20author%3Aapp%2Fdependabot)
 [cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
 [cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
 [cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
@@ -71,141 +72,90 @@ Consists of two deep-learning models: Slice Selection Model and Segmentation Mod
 
 ### Trained Model Weights 
 
-Model Weights are available for download at the following link.
-
-https://drive.google.com/drive/folders/1A3NlgyvlhXL6pgR0weXT4c-XygGl6r-M?usp=drive_link
+Model Weights are available in the "model/test" folder.
 
 
 ### Before You Start
 
 1. Download the model weights from the google drive link provided above, unzip the files, and save them in the 'model' subfolder. Please note that the CV folder within the zip file contains five-fold cross-validation sub-models for segmentation.
 
-2. Make sure the input files are stored in the following folder
+2. Make sure you set the env properities (pass as command line arguments to main.py script)
+    <proj_dir>  - Project Directories Path where this code is copied
+    <dataset> - instuition name of curated dataset e.g. BWH , default value is "test"
 
-   Raw scans - /data/raw_img/
+3. The input files are stored in the following folder
 
-   Suggested directories for storing the data processed in the scripts:
-   Pre-processed Scans - /data/prepro_img
-   Slice Selection Output CSV - /data/test/output_scv
-   Segmentation Model Output - /data/test/output_segmentation 
-  
-3. Before executing each script, edit the script to update the correct input/output directories.
+   Raw scans - /data/<dataset>/img/
+
+4. Following are default directories/paths that get created to stroe the pre-processed files, slice selection output as segmentation output. If you prefer, you can also set them using env variables <pre_process_dir>, <slice_csv_path> and <output_dir>. Passing them to main.py as command line arguments is also accepted.   
    
+   Pre-processed Scans - /data/<dataset>/preprocessed
+   Slice Selection Output CSV - /data/<dataset>/<data-set>_C3_top_slice_pre.csv
+   Segmentation Model Output - /data/<dataset>/output_segmentations 
+ 
 
 ### Steps to Run DeepSarcopenia Model and Calculate C3 SMI
 
-#### Step 1: Data Preprocessing
+    
+#### Step 1: Main script
+    
+Main script executes pre-processing, slice selction and segmentation sequentially
 
-Set the proj_dir, img_dir, and seg_dir folder paths in the main function before executing the code.
-This script preprocesses the raw scans. The steps involve respacing the input files to 1x1, cropping by 256x256, and resizing to 512x512 along the XY plane.
+STEP argument can be used to execute each of the above steps individually. The arguments takes values ALL, SLICE, PREPROCESS, SEGMENT
+  
+Other scripts provided here OPTIONAL, used to generate the needed CSA information, generates statistics, visualizations and final clinical file needed combining patient meta information with image segmenation data 
 
-1. Input: Data folder raw CT scans under the folder of '../data/raw_img'
-2. Out_put: Preprocessed files in the folder '..data/prepro_img'
-
-The Data Preprocessing step can be run by executing:
+The Main script step can be run by executing:
 ```
-src/Preprocess_test_data.py
-```
-
-#### Step 2: Run Slice Selection Model
-
-Set the proj_dir, raw_img_dir, model_path, and slice_csv_path directories before executing the code. 
-This script tests the slice selection model which predicts C3 slice for each raw_scan given as input. Please note that input files are raw CT scans. 
-
-1. Input Scans: nrrd files
-2. Model: C3_Top_Selection_Model_Weight.hdf5 
-3. Output: C3_Top_Slice_Prediction.csv' 
-
-The Run Slice Selection Model step can be run by executing:
-```
-test_slice_model.py
+main.py
 ```
 
-#### Step 3: Run Segmentation Model
+#### Step 2: Calculate C3 Cross Sectional Area
 
-Set the proj_dir, raw_img_dir, model_path, slice_csv_path, and output_dir directories before executing the code. 
-This script generates the segmentation masks for the selected C3 slice for each raw_scan given as input.
-
-1. Input Scans: nrrd files
-2. Model: C3_Top_Segmentation_Model_Weight.hdf5 
-3. Input: C3_Top_Slice_Prediction.csv
-4. Output: Segmentation masks in output_dir
-
-The Run Segmentation Model step can be run by executing:
-```
-test_segmentation_model.py
-```
-
-#### Step 4: Run Model Evaluation
-
-Set the proj_dir, raw_img_dir, raw_seg_dir, Slice Prediction CSV, and output_dir directories before executing the code. 
-This script generates the Dice scores for auto-segmentation masks when manual segmentations of test data are available.
-1. Input#1: Auto segmentation files
-2. Input#2: Manual segmentation files of test data
-3. Input#3: C3_Top_Slice_Prediction.csv
-4. Output: DICE Scores of test data in a CSV file
-
-The Run Model Evaluation step can be run by executing:
-```
-get_dice.py
-```
-
-#### Step 5: Calculate C3 Cross Sectional Area
-
-Set the proj_dir, raw_img_dir, raw_seg_dir, Slice Prediction CSV, and output_dir directories before executing the code. 
 This script generates the Cross-Sectional Area (CSA) of the C3 Skeletal Muscle Mass from the auto-segmented masks.
 
-1. Input#1: Auto segmentation files
-2. Input#2: Manual segmentation files of test data
-3. Input#3: C3_Top_Slice_Prediction.csv
-4. Output: CSA in a CSV file
+Set the proj_dir, raw_img_dir, raw_seg_dir, Slice Prediction CSV, and output_dir directories before executing the code. 
+	
+   1. Input#1: Auto segmentation files
+   2. Input#2: Manual segmentation files of test data
+   3. Input#3: C3_Top_Slice_Prediction.csv
+   4. Output: CSA in a CSV file
 
 The Calculate C3 Cross Sectional Area step can be run by executing:
 ```
 get_CSA.py
 ```
 
-#### Step 6: Calculate C3 Skeletal Muscle Index (SMI)
+#### Step 3: Visualize C3 Segmentation
 
-Set the proj_dir, raw_img_dir, raw_seg_dir, Slice Prediction CSV, Clinical Meta-data files and output_dir directories before executing the code. 
-This script generates the C3 Skeletal Muscle Index (SMI) and translates that to the corresponding L3 Skeletal Muscle Index (SMI).
-
-1. Input#1: Auto segmentation files
-2. Input#2: Cross-Sectional Area CSV file
-3. Input#3: C3_Top_Slice_Prediction.csv
-4. Input#4: Patient Clinical meta information in a CSV file
-5. Output: SMI data in a CSV file
-
-The Calculate C3 Skeletal Muscle Index (SMI) step can be run by executing:
-```
-clinical.py
-```
-
-### Other Helpful Functions
-
-#### Calculate Cohen Kappa Score
+This script generates the masks with contours for easy visualization.
 
 Set the proj_dir, raw_img_dir, raw_seg_dir, Slice Prediction CSV, and output_dir directories before executing the code. 
-This script calculates the Cohen Kappa score of the trained radiologist's ratings on the auto-segmented mask quality.
-1. Input#1: Auto segmentation files
-2. Input#2: C3_Top_Slice_Prediction.csv
 
-The Calculate Cohen Kappa Score function can be run by executing:
-```
-statistics.py
-```
-
-#### Visualize C3 Segmentation
-
-Set the proj_dir, raw_img_dir, raw_seg_dir, Slice Prediction CSV, and output_dir directories before executing the code. 
-This script generates the masks with contours for easy visualization. 
-- Input#1: Auto segmentation files
-- Input#3: C3_Top_Slice_Prediction.csv
-- Output: Segmentation files with contours for visualizing the masks
+   1. Input#1: Auto segmentation files
+   2. Input#3: C3_Top_Slice_Prediction.csv
+   3. Output: Segmentation files with contours for visualizing the masks
 
 The Visualize C3 Segmentation function can be run by executing:
 ```
 visualize.py
+```
+
+#### Step 4: Calculate C3 Skeletal Muscle Index (SMI)
+
+This script generates the C3 Skeletal Muscle Index (SMI) and translates that to the corresponding L3 Skeletal Muscle Index (SMI).
+
+Set the proj_dir, raw_img_dir, raw_seg_dir, Slice Prediction CSV, Clinical Meta-data files and output_dir directories before executing the code. 
+
+   1. Input#1: Auto segmentation files
+   2. Input#2: Cross-Sectional Area CSV file
+   3. Input#3: C3_Top_Slice_Prediction.csv
+   4. Input#4: Patient Clinical meta information in a CSV file
+   5. Output: SMI data in a CSV file
+
+The Calculate C3 Skeletal Muscle Index (SMI) step can be run by executing:
+```
+clinical.py
 ```
 
 ## Citation
